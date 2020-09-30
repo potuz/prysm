@@ -26,7 +26,7 @@ func ZinkenConfig() *BeaconChainConfig {
 	cfg.MinGenesisTime = 1601899200
 	cfg.GenesisDelay = 345600
 	cfg.GenesisForkVersion = []byte{0x00, 0x00, 0x00, 0x03}
-	cfg.NetworkName = "zinken"
+	cfg.NetworkName = "Zinken"
 	cfg.MinGenesisActiveValidatorCount = 1024
 	return cfg
 }
