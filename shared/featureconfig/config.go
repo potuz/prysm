@@ -32,6 +32,7 @@ var log = logrus.WithField("prefix", "flags")
 // Flags is a struct to represent which features the client will perform on runtime.
 type Flags struct {
 	// Testnet Flags.
+	MainNet        bool // MainNet defines the flag through which we can enable the node to run on mainnet. This is true by default so this flag is a noop.
 	AltonaTestnet  bool // AltonaTestnet defines the flag through which we can enable the node to run on the Altona testnet.
 	OnyxTestnet    bool // OnyxTestnet defines the flag through which we can enable the node to run on the Onyx testnet.
 	MedallaTestnet bool // MedallaTestnet defines the flag through which we can enable the node to run on the Medalla testnet.

@@ -5,6 +5,12 @@ import (
 )
 
 var (
+	// MainNet flag is a noop feature request, see #7735. It defaults to true so that the help is not confusing
+	MainNet = &cli.BoolFlag{
+		Name:  "mainnet",
+		Usage: "This defines the flag through which we can run on the Main Multiclient Testnet",
+		Value: true,
+	}
 	// AltonaTestnet flag for the multiclient eth2 testnet configuration.
 	AltonaTestnet = &cli.BoolFlag{
 		Name:  "altona",
@@ -100,6 +106,7 @@ var devModeFlags = []cli.Flag{
 var ValidatorFlags = append(deprecatedFlags, []cli.Flag{
 	enableExternalSlasherProtectionFlag,
 	waitForSyncedFlag,
+	MainNet,
 	AltonaTestnet,
 	OnyxTestnet,
 	MedallaTestnet,
@@ -112,6 +119,7 @@ var ValidatorFlags = append(deprecatedFlags, []cli.Flag{
 // SlasherFlags contains a list of all the feature flags that apply to the slasher client.
 var SlasherFlags = append(deprecatedFlags, []cli.Flag{
 	disableLookbackFlag,
+	MainNet,
 	AltonaTestnet,
 	OnyxTestnet,
 	MedallaTestnet,
@@ -132,6 +140,7 @@ var BeaconChainFlags = append(deprecatedFlags, []cli.Flag{
 	waitForSyncedFlag,
 	disableGRPCConnectionLogging,
 	attestationAggregationStrategy,
+	MainNet,
 	AltonaTestnet,
 	OnyxTestnet,
 	MedallaTestnet,
