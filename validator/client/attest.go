@@ -231,8 +231,14 @@ func (v *validator) waitOneThirdOrValidBlock(ctx context.Context, slot uint64) {
 	if slot <= v.highestValidSlot {
 		return
 	}
+	var delay time.Duration
 
-	delay := slotutil.DivideSlotBy(3 /* a third of the slot duration */)
+	if slot%32 == 0 {
+		delay = slotutil.DivideSlotBy(2 /* a half of the slot duration */)
+	} else {
+		delay = slotutil.DivideSlotBy(3 /* a third of the slot duration */)
+	}
+
 	startTime := slotutil.SlotStartTime(v.genesisTime, slot)
 	finalTime := startTime.Add(delay)
 	wait := timeutils.Until(finalTime)
