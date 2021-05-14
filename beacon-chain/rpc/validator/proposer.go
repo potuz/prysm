@@ -8,7 +8,6 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/eth/catalyst"
 	fastssz "github.com/ferranbt/fastssz"
 	"github.com/pkg/errors"
@@ -173,9 +172,10 @@ func (vs *Server) ProposeBlock(ctx context.Context, blk *ethpb.SignedBeaconBlock
 		"blockRoot": hex.EncodeToString(root[:]),
 	}).Debug("Broadcasting block")
 
-	if err := vs.BlockReceiver.ReceiveBlock(ctx, blk, root); err != nil {
-		return nil, status.Errorf(codes.Internal, "Could not process beacon block: %v", err)
-	}
+       if err := vs.BlockReceiver.ReceiveBlock(ctx, blk, root); err != nil {
+		log.WithFields(logrus.Fields{"error": err,
+		}).Debug("Could not process beacon block")
+       }
 
 	return &ethpb.ProposeResponse{
 		BlockRoot: root[:],
@@ -635,15 +635,16 @@ func (vs *Server) packAttestations(ctx context.Context, latestState iface.Beacon
 
 // produceExecPayload calls the eth1 node for execution payload and returns it to block producer.
 func (vs *Server) produceExecPayload(ctx context.Context, state iface.ReadOnlyBeaconState, slot types.Slot) (*catalyst.ExecutableData, error) {
-	header, err := state.LatestExecutionPayloadHeader()
+	//get the current time minus 1 minute. 
+	timeStamp := uint64(slotutil.SlotStartTime(state.GenesisTime(), slot).Unix())
+	header, err := vs.Eth1BlockFetcher.BlockByTimestamp(ctx, timeStamp - 60)
 	if err != nil {
 		return nil, err
 	}
 
-	timeStamp := slotutil.SlotStartTime(state.GenesisTime(), slot)
 	payload, err := vs.ApplicationExecutor.AssembleExecutionPayload(ctx, catalyst.AssembleBlockParams{
-		ParentHash: common.BytesToHash(header.BlockHash),
-		Timestamp:  uint64(timeStamp.Unix()),
+		ParentHash: header.Hash,
+		Timestamp:  timeStamp,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Could not produce execution data %v", err)
